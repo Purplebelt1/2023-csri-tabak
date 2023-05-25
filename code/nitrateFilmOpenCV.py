@@ -16,14 +16,13 @@ cv.randn(noise, mean, stddev)
 
 
 
-noisy_img = cv.add(blurred_img, noise)
+#noisy_img = cv.add(blurred_img, noise)
 
-bwImg = cv.cvtColor(noisy_img, cv.COLOR_BGR2GRAY)
+bwImg = cv.cvtColor(blurred_img, cv.COLOR_BGR2GRAY)
 bwImg = cv.cvtColor(bwImg, cv.COLOR_GRAY2BGR)
 
 
-bwImgWdt = bwImg.shape[0]
-bwImgHght = bwImg.shape[1]
+
 
 
 
@@ -33,6 +32,17 @@ bwYlwTint = cv.addWeighted(bwImg, 0.85, yellow_layer, 0.15, 0)
 
 BLACK = [0,0,0]
 black_border_img = cv.copyMakeBorder(bwYlwTint, 2,2,2,2, cv.BORDER_CONSTANT, value=BLACK)
+
+scratches = cv.imread("./images/dusty3.jpg")
+
+
+borImgWdt = black_border_img.shape[0]
+borImgHght = black_border_img.shape[1]
+
+resized_scratches = cv.resize(scratches, (borImgHght,borImgWdt))
+print(resized_scratches)
+th, bi_scratches = cv.threshold(resized_scratches, 150, 255, cv.THRESH_TOZERO);
+scratched_photo = np.where(bi_scratches == [0,0,0],black_border_img, bi_scratches)
 
 #mask = np.zeros(img.shape)
 #mask = np.pad(mask, pad_width=2, mode='constant', constant_values=[1,1,1])
@@ -48,13 +58,15 @@ black_border_img = cv.copyMakeBorder(bwYlwTint, 2,2,2,2, cv.BORDER_CONSTANT, val
 #cv.imshow('Black white image', bwImg)
 
 cv.namedWindow("Resized_Window", cv.WINDOW_NORMAL)
+cv.namedWindow("Resized_Window2", cv.WINDOW_NORMAL)
   
 # Using resizeWindow()
 cv.resizeWindow("Resized_Window", 300, 700)
+cv.resizeWindow("Resized_Window2", 300, 700)
 
 # Displaying the image
 
-print("Heyo")
+cv.imshow("Resized_Window2", scratched_photo)
 cv.imshow("Resized_Window", black_border_img)
 
 cv.waitKey(0)
