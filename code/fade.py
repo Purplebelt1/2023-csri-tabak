@@ -27,14 +27,3 @@ for color in faded_image.getdata():
 newim = Image.new(faded_image.mode,faded_image.size)
 newim.putdata(color_data)
 newim.show()
-
-
-
-
-
-
-
-
-
-#faded_image.show()
-#print("done")
