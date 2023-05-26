@@ -1,28 +1,28 @@
 from PIL import Image, ImageEnhance, ImageFile
 
 #take R, G, and B values and return adjusted values
-def pixelProcRed(intensity):
+def pixelProcRed(intensity, dr):
 
-    return intensity / adjustRed
+    return intensity / dr
 
-def pixelProcBlue(intensity):
+def pixelProcBlue(intensity, db):
 
-    return intensity / adjustBlue
+    return intensity / db
 
-def pixelProcGreen(intensity):
+def pixelProcGreen(intensity, dg):
 
-    return intensity / adjustGreen
+    return intensity / dg
 
-def color_adjust(img):
+def color_adjust(img, adjustRed = 1, adjustGreen = 1, adjustBlue = 1):
     #alters RGB values and makes new image with new values
     #enhances color of new image
     multiBands = img.split()
 
-    redBand = multiBands[0].point(pixelProcRed)
+    redBand = multiBands[0].point(lambda p: pixelProcRed(p, adjustRed))
 
-    greenBand = multiBands[1].point(pixelProcGreen)
+    greenBand = multiBands[1].point(lambda p: pixelProcGreen(p, adjustGreen))
 
-    blueBand = multiBands[2].point(pixelProcBlue)
+    blueBand = multiBands[2].point(lambda p: pixelProcBlue(p, adjustBlue))
 
     newImage = Image.merge("RGB", (redBand, greenBand, blueBand))
 
@@ -30,71 +30,56 @@ def color_adjust(img):
 
     return water_color_enhancer.enhance(2)
 
-#open image
+def color_filter(img):
+    #create boxes to crop image
+    box = (img.size[0] // 4,img.size[1] // 4, (3 * img.size[0]) // 4, (3 * img.size[1]) // 4)
+    ulbox = (0, 0, img.size[0] // 2, img.size[1] // 2)
+    urbox = (img.size[0] // 2, 0, img.size[0], img.size[1] // 2)
+    blbox = (0, img.size[1] // 2, img.size[0] // 2, img.size[1])
+    brbox = (img.size[0] // 2, img.size[1] // 2, img.size[0], img.size[1])
 
-water_image = Image.open("images/water _view.JPG")
+    #divide image into four corner regions and middle region
 
-#create boxes to crop image
+    region = img.crop(box)
+    regionr = img.crop(ulbox)
+    regiong = img.crop(blbox)
+    regionb = img.crop(brbox)
+    regionc = img.crop(urbox)
 
-box = (1008,756, 3024, 2268)
-ulbox = (0, 0, 2016, 1512)
-urbox = (2016, 0, 4031, 1512)
-blbox = (0, 1512, 2016, 3023)
-brbox = (2016, 1512, 4031, 3023)
+    #add color filter and enhance color to four corner regions
 
-#divide image into four corner regions and middle region
+    regionr = color_adjust(regionr, 2)
 
-region = water_image.crop(box)
-regionr = water_image.crop(ulbox)
-regiong = water_image.crop(blbox)
-regionb = water_image.crop(brbox)
-regionc = water_image.crop(urbox)
+    regionb = color_adjust(regionb, 1, 1, 2)
 
-#add color filter and enhance color to four corner regions
-adjustRed = 2
+    regiong = color_adjust(regiong, 1, 2)
 
-adjustBlue = 1
+    regionc = color_adjust(regionc)
 
-adjustGreen = 1
+    #filter middle section to be black and white and resize back to original size
+    region_color_enhancer = ImageEnhance.Color(region)
 
-regionr = color_adjust(regionr)
+    region_enhanced_image = region_color_enhancer.enhance(0)
 
+    region_enhanced_image = region_enhanced_image.resize((img.size[0] // 2, img.size[1] // 2))
 
-adjustRed = 1
+    #connect regions into image
 
-adjustBlue = 2
+    upper = Image.new('RGB', (img.size[0], img.size[1] // 2))
+    upper.paste(regionr, (0,0))
+    upper.paste(regionc, (img.size[0] // 2,0))
+    bottom = Image.new('RGB', (img.size[0], img.size[1] // 2))
+    bottom.paste(regiong, (0,0))
+    bottom.paste(regionb, (img.size[0] // 2,0))
+    merge = Image.new('RGB', (img.size[0], img.size[1]))
+    merge.paste(upper, (0,0))
+    merge.paste(bottom, (0,img.size[1] // 2))
+    merge.paste(region_enhanced_image, box)
+    return merge
 
-regionb = color_adjust(regionb)
+def main():
+    water_image = Image.open("images/water _view.JPG")
+    color_filter(water_image).show()
 
-
-adjustBlue = 1
-
-adjustGreen = 2
-
-regiong = color_adjust(regiong)
-
-
-adjustGreen = 1
-
-regionc = color_adjust(regionc)
-
-#filter middle section to be black and white and resize back to original size
-region_color_enhancer = ImageEnhance.Color(region)
-
-region_enhanced_image = region_color_enhancer.enhance(0)
-
-region_enhanced_image = region_enhanced_image.resize((2016, 1512))
-
-#connect regions into image
-
-upper = Image.new('RGB', (4032, 1512))
-upper.paste(regionr, (0,0))
-upper.paste(regionc, (2016,0))
-bottom = Image.new('RGB', (4032, 1512))
-bottom.paste(regiong, (0,0))
-bottom.paste(regionb, (2016,0))
-merge = Image.new('RGB', (4032, 3024))
-merge.paste(upper, (0,0))
-merge.paste(bottom, (0,1512))
-merge.paste(region_enhanced_image, box)
-merge.show()
+if __name__ == '__main__':
+    main()
