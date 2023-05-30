@@ -1,7 +1,7 @@
 
 import numpy as np;
 import matplotlib.pyplot as plt;
-from PIL import Image, ImageFilter, ImageEnhance
+from PIL import Image, ImageFilter
 
 def distanceFromPoint( x, y , px, py ):
     # x, y are coordinates of a pixel
@@ -118,7 +118,7 @@ def vignette(im, px, py, radius, finalDistance):
     # the two images depend upon a pixel's
     # distance from the point we define here
     
-    px = px
+    px = px    
     py = py
 
     #radius is the radius of the circle, for if
@@ -210,6 +210,7 @@ def vignette(im, px, py, radius, finalDistance):
     return result
 
 def main():
+    #test image
     original = Image.open('images/water _view.JPG')
     im = vignette(original, 0.5, 0.5, 0.2, 0.3)
     im.show()
