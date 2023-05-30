@@ -92,27 +92,24 @@ def weightedAverageColors( a, b, weight ):
     return (resultRed, resultGreen, resultBlue)
 # weightedAverageColors()
 
-def main():
+def vignette(im, px, py, radius, finalDistance):
     # TO-DO: experiment with other images
-    original2 = Image.open('images/water _view.JPG')
-    original = original2.copy().resize((504, 378))
+    #original2 = Image.open('images/water _view.JPG')
+    #original = original2.copy().resize((504, 378))
 
     # TO-DO:
     #  Experiment with other values of radius
     #  Experiment with other filters
     #  Experiment with ImageEnhance to vary contrast,
     #    brightness, or saturation
-    darken = ImageEnhance.Brightness(original.copy())
-    dark = darken.enhance(0.005)
-    blurred = dark.copy().filter(filter=ImageFilter.GaussianBlur(radius=9))
-    blurred = blurred.point(lambda p: 0)
+    blurred = im.point(lambda p: 0)
 
     # create a copy that will become
     # a blended version of original and blurred
-    result = original.copy()
+    result = im.copy()
 
     # get dimensions of image
-    height, width = original.size
+    height, width = im.size
 
     print( 'width = ', width )
     print( 'height = ', height )
@@ -120,9 +117,9 @@ def main():
     # let proportions with which we blend
     # the two images depend upon a pixel's
     # distance from the point we define here
-    px = 0.5
-    py = 0.5
-
+    
+    px = px
+    py = py
 
     #radius is the radius of the circle, for if
     #a circle is being used
@@ -130,8 +127,8 @@ def main():
     #finalDistance is the distance from the edge
     #at which the effect reaches its final change
     #before staying at a constant weight
-    radius = 0.2
-    finalDistance = 0.3
+    radius = radius
+    finalDistance = finalDistance
 
     minimumDistance = 0.0
 
@@ -178,7 +175,7 @@ def main():
             # from the center of the image
             #weight = distanceFromPoint( x, y, px, py )
 
-            weight = distanceFromCircle( x, y, 0.5, 0.5, radius )
+            weight = distanceFromCircle( x, y, px, py, radius )
 
             #weight = distanceFromLine( x, 0.4 )
 
@@ -198,7 +195,7 @@ def main():
 
             
             # fetch colors of pixels in both images
-            originalColor = original.getpixel( (i, j) )
+            originalColor = im.getpixel( (i, j) )
             blurredColor = blurred.getpixel( (i, j) )
 
             blendedColor = weightedAverageColors(
@@ -210,7 +207,12 @@ def main():
             # the new image
             result.putpixel( (i, j), blendedColor )
     
-    result.show()
+    return result
+
+def main():
+    original = Image.open('images/water _view.JPG')
+    im = vignette(original, 0.5, 0.5, 0.2, 0.3)
+    im.show()
     
 if __name__ == '__main__':
     main()
