@@ -123,13 +123,25 @@ def main():
     px = 0.5
     py = 0.5
 
+
+    #radius is the radius of the circle, for if
+    #a circle is being used
+    #the circle will contain only the original image
+    #finalDistance is the distance from the edge
+    #at which the effect reaches its final change
+    #before staying at a constant weight
+    radius = 0.2
+    finalDistance = 0.3
+
     minimumDistance = 0.0
 
     d0 = distanceFromPoint( 0.0, 0.0, px, py )
     d1 = distanceFromPoint( 1.0, 0.0, px, py )
     d2 = distanceFromPoint( 0.0, 1.0, px, py )
     d3 = distanceFromPoint( 1.0, 1.0, px, py )
-    maximumDistance = max( max(d0, d1), max(d2, d3) ) -.2
+    maximumDistance = max( max(d0, d1), max(d2, d3) ) - radius - finalDistance
+    if maximumDistance < 0:
+        ValueError("(Radius + Final distance) is greater than center point to furthest corner of screen")
                            
     # pair of nested loops will let us examine the
     # pixels row by row and column by column
@@ -166,7 +178,7 @@ def main():
             # from the center of the image
             #weight = distanceFromPoint( x, y, px, py )
 
-            weight = distanceFromCircle( x, y, 0.5, 0.5, 0.1 )
+            weight = distanceFromCircle( x, y, 0.5, 0.5, radius )
 
             #weight = distanceFromLine( x, 0.4 )
 
