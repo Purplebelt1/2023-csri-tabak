@@ -79,7 +79,8 @@ def color_filter(img):
 
 def main():
     water_image = Image.open("images/water _view.JPG")
-    color_filter(water_image).show()
+    im = color_filter(water_image)
+    im.show()
 
 if __name__ == '__main__':
     main()

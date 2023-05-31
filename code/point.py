@@ -14,7 +14,7 @@ def main():
     im = ImageChops.subtract(image1 = im, image2 = im2)
     enhanced_im = ImageEnhance.Brightness(im)
     im = enhanced_im.enhance(2)
-    im = ImageChops.subtract(image1 = im3, image2 = im)
+    im = ImageChops.soft_light(image1 = im3, image2 = im)
 
     im.show()
 
