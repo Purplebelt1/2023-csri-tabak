@@ -1,13 +1,12 @@
 import cv2 as cv
 import numpy as np
 import Result
+import math
 from sklearn.cluster import MiniBatchKMeans
 
-
-
-
-def basicPoserization(img):
-    return img // 128 * 128
+def basicPosterization(img, channel_num):
+    divisor = 255 / channel_num
+    return np.rint(np.rint(img / divisor) * divisor).astype("uint8")
 
 def kMeanPosterization(img , clusters):
     (h, w) = img.shape[:2]
@@ -21,13 +20,13 @@ def kMeanPosterization(img , clusters):
     return quant
 
 def main():
-    path = "./images/tree_swing.jpg"
+    path = "./images/wolf.jpg"
     base_img = cv.imread(path)
 
-    posterized1 = basicPoserization(base_img)
-    posterized2 = kMeanPosterization(base_img, 3)
+    posterized1 = basicPosterization(base_img, 3)
+    posterized2 = kMeanPosterization(base_img, 6)
 
-    Result.multiWindow([base_img,posterized1,posterized2])
+    Result.multiWindow([base_img,posterized1, posterized2])
 
 if __name__ == '__main__':
     main()
