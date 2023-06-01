@@ -25,8 +25,8 @@ def shiftSubtract(im, offset):
 
 def main():
     #tests shiftSubtract
-    im = Image.open("images/calm_water.JPG")
-    im3 = shiftSubtract(im, 90)
+    im = Image.open("images/fire.jpg")
+    im3 = shiftSubtract(im, 2)
     im3 = im3.crop((0,0,im3.size[0], (im3.size[1] * 7)//10))
     im3.show()
 
