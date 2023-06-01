@@ -1,4 +1,5 @@
 from PIL import Image, ImageEnhance
+import math
 import cv2 as cv
 import numpy as np
 from scipy.interpolate import UnivariateSpline
@@ -67,13 +68,86 @@ def VintageVibe(img):
 
     return scratched_photo
 
+def Halloween(img, dark=3):
+    return Gamma(Toasty(img), dark)
+
+def Gamma(img, gamma):
+    lookUpTable = np.empty((1,256), np.uint8)
+    for i in range(256):
+        lookUpTable[0,i] = np.clip(pow(i / 255.0, gamma) * 255.0, 0, 255)
+    res = cv.LUT(img, lookUpTable)
+    return res
+
+def CLAHE(img, clipLim = 2.0, gridSize=(16,16)):
+
+    lab= cv.cvtColor(img, cv.COLOR_BGR2LAB)
+    l_channel, a, b = cv.split(lab)
+
+    # Applying CLAHE to L-channel
+    clahe = cv.createCLAHE(clipLimit=clipLim, tileGridSize=gridSize)
+    cl = clahe.apply(l_channel)
+
+    # merge the CLAHE enhanced L-channel with the a and b channel
+    limg = cv.merge((cl,a,b))
+
+    # Converting image from LAB Color model to BGR color spcae
+    enhanced_img = cv.cvtColor(limg, cv.COLOR_LAB2BGR)
+    return enhanced_img
+
+def apply_brightness_contrast(input_img, brightness = 0, contrast = 0):
+    
+    if brightness != 0:
+        if brightness > 0:
+            shadow = brightness
+            highlight = 255
+        else:
+            shadow = 0
+            highlight = 255 + brightness
+        alpha_b = (highlight - shadow)/255
+        gamma_b = shadow
+        
+        buf = cv.addWeighted(input_img, alpha_b, input_img, 0, gamma_b)
+    else:
+        buf = input_img.copy()
+    
+    if contrast != 0:
+        f = 131*(contrast + 127)/(127*(131-contrast))
+        alpha_c = f
+        gamma_c = 127*(1-f)
+        
+        buf = cv.addWeighted(buf, alpha_c, buf, 0, gamma_c)
+
+    return buf
+
+def SaturateByCurve(img, saturationCoeff):
+
+    hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
+
+    # If you want to adjust curve adjust the expoenents
+    saturationLUT = LookupTable([0,85,170,256],[round(saturationCoeff * 255), round((saturationCoeff ** .5) * 170 + 85),round((saturationCoeff ** .75) * 80 + 170), 256])
+
+    hue, saturation, value = cv.split(hsv)  # Split the image into separate channels
+
+    saturation = cv.LUT(saturation, saturationLUT).astype(np.uint8)
+
+    output = cv.merge((hue, saturation, value))
+
+    output = cv.cvtColor(output, cv.COLOR_HSV2BGR)
+
+    return output
 
 def main():
-  base_img = cv.imread("./images/stairs1.jpg")
+  base_img = cv.imread("./images/barn_house.jpg")
+  gamma = Gamma(base_img, 2)
   frosted = Frosty(base_img)
   toasted = Toasty(base_img)
   vintage = VintageVibe(base_img)
-  Result.singleWindow([base_img,frosted,toasted,vintage], dtype="s")
+  saturate1 = SaturateByCurve(base_img, 0.1)
+  saturate2 = SaturateByCurve(base_img, 0.2)
+  saturate3 = SaturateByCurve(base_img, 0.3)
+  #print(base_img.shape)
+  dim = base_img.shape[:2]
+  Result.singleWindow([saturate1, saturate2, saturate3, base_img], dtype = "s", imDim = dim)
 
 if __name__ == '__main__':
    main()

@@ -39,10 +39,12 @@ def distanceFromBand( xOrY, loBound, hiBound ):
     #   of two vertical lines or y coordinates
     #   of two horizontal lines
     # 0.0 <= xOrY, loBound, hiBound <= 1.0
-    diff = abs(xOrY - loBound)
-    if xOrY > hiBound:
+    if loBound < xOrY < hiBound:
+        return 0.0
+    elif xOrY < loBound:
+        return loBound - xOrY
+    else:
         return xOrY - hiBound
-    return diff
 # distanceFromBand()
 
 def clip( weight ):
@@ -100,7 +102,7 @@ def main():
     #  Experiment with other filters
     #  Experiment with ImageEnhance to vary contrast,
     #    brightness, or saturation
-    blurred = original.copy().filter(filter=ImageFilter.GaussianBlur(radius=24))
+    blurred = original.copy().filter(filter=ImageFilter.GaussianBlur(radius=4))
 
     # create a copy that will become
     # a blended version of original and blurred

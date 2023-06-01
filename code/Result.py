@@ -2,7 +2,8 @@ import cv2 as cv
 import numpy as np
 import math
 
-def singleWindow(pics, height=800, width=800, imHeight=800, imWidth=800, name="default", dtype="h"):
+def singleWindow(pics, height=800, width=800, imDim=(800,800), name="default", dtype="h"):
+    imDim = imDim[::-1]
     cv.namedWindow(name, cv.WINDOW_NORMAL)
     cv.resizeWindow(name, height, width)
     if type(pics) == list:
@@ -12,7 +13,7 @@ def singleWindow(pics, height=800, width=800, imHeight=800, imWidth=800, name="d
             cv.imshow(name, np.vstack(pics))
         elif dtype == "s":
             for i in range(len(pics)):
-                pics[i] = cv.resize(pics[i],(imWidth,imHeight),interpolation = cv.INTER_AREA)
+                pics[i] = cv.resize(pics[i],imDim,interpolation = cv.INTER_AREA)
             num_pics = len(pics)
             pics_sqrt = math.sqrt(num_pics)
             if int(pics_sqrt) == pics_sqrt:
