@@ -2,13 +2,17 @@ from PIL import Image, ImageOps, ImageFile, ImageEnhance
 import Chopchop
 import Edging
 
-def contrastEnhacne(im, degree, enhance):
+def contrastEnhance(im, degree, enhance):
     im2 = ImageOps.autocontrast(im, degree)
     im2 = ImageEnhance.Color(im2)
     im2 = im2.enhance(enhance)
     return im2
 
-
+def poster(im, chanels):
+    im = im.copy()
+    divisor = 255 / chanels
+    im = im.point(lambda p: (p // divisor) * divisor)
+    return im
 
 def main():
     ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -21,10 +25,11 @@ def main():
     im6 = im5.convert("1")
     im6 = im6.convert("L")
     im7 = ImageOps.colorize(im6, "black", "white", "black")
+    im8 = poster(im, 1)
     #im4.save("base.jpg")
-    im7.save("outline.jpg")
+    #im7.save("outline.jpg")
     #im6.show()
-    im7.show()
+    im8.show()
 
 if __name__ == '__main__':
     main()

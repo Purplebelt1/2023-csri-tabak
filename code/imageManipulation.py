@@ -1,4 +1,4 @@
-from PIL import Image, ImageEnhance, ImageFile
+from PIL import Image, ImageEnhance, ImageFile, ImageOps
 
 #take R, G, and B values and return adjusted values
 def pixelProcRed(intensity, dr):
@@ -74,12 +74,16 @@ def color_filter(img):
     merge = Image.new('RGB', (img.size[0], img.size[1]))
     merge.paste(upper, (0,0))
     merge.paste(bottom, (0,img.size[1] // 2))
+    #solarizes image before middle black and white
+    #section is added
+    merge = ImageOps.solarize(merge)
     merge.paste(region_enhanced_image, box)
     return merge
 
 def main():
     water_image = Image.open("images/water _view.JPG")
     im = color_filter(water_image)
+    im = ImageOps.expand(im, 50)
     im.show()
 
 if __name__ == '__main__':
