@@ -20,7 +20,7 @@ def main():
     #im2 = contrastEnhance(im, 30, 3)
     im3 = im.convert("L")
     im3 = ImageOps.equalize(im3)
-    im4 = ImageOps.colorize(im3, "darkblue", "Darkgoldenrod")#"Blue", "Yellow", "Green")
+    im4 = ImageOps.colorize(im3, "White", "DarkGoldenRod")#darkblue", "Darkgoldenrod")#"Blue", "Yellow", "Green")
     # - for purple sky -(153,75,0), "Purple", "Orange")
     #(1, 92, 31), "Purple", (88, 149, 219)) #(153, 75, 0) - dark orange
     im5 = Edging.edging(im4, 2)
@@ -36,6 +36,7 @@ def main():
     #im6.show()
     #im8.save("to_emboss.jpg")
     #im4.save("post_butchering.jpg")
+    print(im4.size)
     im4.show()
 
 if __name__ == '__main__':
