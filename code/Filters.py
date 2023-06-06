@@ -26,6 +26,35 @@ def LookupTable(x, y):
     return LUT
 
 
+def readCoordsFromFile(path):
+    file = open(path, 'r')
+    lines = file.readlines()
+    result = ''.join([item for item in lines])[1:-2].split(")\n(")
+    result = [list(map(int, item.split(','))) for item in result]
+    file.close()
+    return result
+
+
+#
+#
+# INPUT
+#
+#
+#
+# OUTPUT
+#
+#
+#
+def colorInRangeThreshold(img, lower_bound, upper_bound ,invert = False):
+
+    hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
+    mask = cv.inRange(hsv, lower_bound, upper_bound)
+    if invert:
+        mask = cv.bitwise_not(mask)
+    target = cv.bitwise_and(img,img, mask=mask)
+    #target = cv.cvtColor(target, cv.COLOR_HSV2BGR)
+
+    return target, mask
 
 
 # Changed the input image into a cool effect by increasing preset B valuse in BGR and decreasing R values
@@ -279,15 +308,20 @@ def cropPolygon(img, coords):
     return inner_crop, outer_crop
 
 def main():
-  base_img = cv.imread("./images/barn_house.jpg")
+  base_img = cv.imread("./images/skyline.jpg")
+  print(base_img)
+  coords = readCoordsFromFile("./resources/coords")
+  icrop, ocrop = cropPolygon(base_img, coords)
+  #print(base_img.shape)
   #croped_outer, croped_inner = cropPolygon(base_img, [[2000,45], [92,200], [63, 75]])
+  #thresh, mask = colorInRangeThreshold(base_img, (100,20,10), (115,255,255), True)
+  #thresh, mask = colorInRangeThreshold(base_img, (0,0,0), (179,255,255))
   sat1 = SaturateByCurve(base_img, .1)
   sat2 = SaturateByCurve(base_img, .2)
   sat3 = SaturateByCurve(base_img, .3)
 
-  #print(base_img.shape)
   dim = base_img.shape[:2]
-  Result.singleWindow([sat1,sat2,sat3, base_img], dtype = "s", imDim = dim)
+  Result.multiWindow([ocrop, icrop , base_img])
   #Result.singleWindow([croped_inner])
 
 if __name__ == '__main__':
