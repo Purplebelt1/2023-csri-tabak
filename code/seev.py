@@ -8,8 +8,10 @@ def trig(im):
 
 def main():
     im = cv.imread('./images/moss.jpg')
-    hcl = cv.cvtColor(im, cv.COLOR_BGR2LAB)
-    Result.singleWindow(hcl)
+    lab = cv.cvtColor(im, cv.COLOR_BGR2LAB)
+    print(lab.shape)
+    bgr = cv.cvtColor(lab, cv.COLOR_LAB2BGR)
+    Result.singleWindow(bgr)
 
 if __name__ == '__main__':
     main()
