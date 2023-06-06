@@ -5,12 +5,39 @@ import numpy as np
 from scipy.interpolate import UnivariateSpline
 import Result
 
-# Function to create a lookup table using spline interpolation
+
+
+
+# Creates a lookup table using spline interpolation
+#
+# INPUT
+#
+#    x: A list of base numbers. The numbers you wish to be turned into the y array
+#
+#    y: A list of adjusted numbers. The numbers you wish those in x array to be turned into.
+#
+# OUTPUT
+#
+#    LUT: A full lookup table from 0 to 255 built from spline inerpolation from x to y.
+#
 def LookupTable(x, y):
     spline = UnivariateSpline(x, y)  # Create a spline using x and y values
-    return spline(range(256))  # Evaluate the spline for each value in the range 0-255
+    LUT = spline(range(256))  # Evaluate the spline for each value in the range 0-255
+    return LUT
 
-# Frost effect function
+
+
+
+# Changed the input image into a cool effect by increasing preset B valuse in BGR and decreasing R values
+#
+# INPUT
+#
+#    img: The input image to be manipulated.
+#
+# OUTPUT
+#
+#    frost: The output image after manipulation
+#
 def Frosty(img):
     increaseLookupTable = LookupTable([0, 64, 128, 256], [0, 80, 160, 256])  # Lookup table for increasing blue channel
     decreaseLookupTable = LookupTable([0, 64, 128, 256], [0, 50, 100, 256])  # Lookup table for decreasing red channel
@@ -23,6 +50,17 @@ def Frosty(img):
     
     return frost  # Return the resulting frost effect image
 
+
+# Changed the input image into a warm effect by increasing preset R valuse in BGR and decreasing B values
+#
+# INPUT
+#
+#    img: The input image to be manipulated.
+#
+# OUTPUT
+#
+#    toast: The output image after manipulation
+#
 def Toasty(img):
     increaseLookupTable = LookupTable([0, 64, 128, 256], [0, 80, 160, 256])  # Lookup table for increasing blue channel
     decreaseLookupTable = LookupTable([0, 64, 128, 256], [0, 50, 100, 256])  # Lookup table for decreasing red channel
@@ -31,10 +69,21 @@ def Toasty(img):
     blue_channel = cv.LUT(blue_channel, decreaseLookupTable).astype(np.uint8)  # Apply lookup table to the red channel
     red_channel = cv.LUT(red_channel, increaseLookupTable).astype(np.uint8)  # Apply lookup table to the blue channel
     
-    frost = cv.merge((blue_channel, green_channel, red_channel))  # Merge the modified channels into an image
+    toast = cv.merge((blue_channel, green_channel, red_channel))  # Merge the modified channels into an image
     
-    return frost  # Return the resulting frost effect image
+    return toast  # Return the resulting toasty effect image
 
+
+# Emulates a piece of nitrate film aged and scratched. Adding sepia, film scratches, and slight blur.
+#
+# INPUT
+#
+#    img: The input image to be manipulated into looking like nitrate film
+#
+# OUTPUT
+#
+#    output: The images after being turned to look like old nitrate film.
+#
 def VintageVibe(img):
     # Apply Gaussian blur to the input image
     blurred_img = cv.GaussianBlur(img, (31, 31), 0)
@@ -64,13 +113,25 @@ def VintageVibe(img):
     th, bi_scratches = cv.threshold(resized_scratches, 150, 255, cv.THRESH_TOZERO)
 
     # Replace areas in bi_scratches where the pixels are black with corresponding pixels from bwYlwTint
-    scratched_photo = np.where(bi_scratches == [0, 0, 0], bwYlwTint, bi_scratches)
+    output = np.where(bi_scratches == [0, 0, 0], bwYlwTint, bi_scratches)
 
-    return scratched_photo
+    return output
 
 def Halloween(img, dark=3):
     return Gamma(Toasty(img), dark)
 
+# Changes the gamma of the image. Gamma is control of the intensity of the middle range relative to a binary color space
+#
+# INPUT
+#
+#    img: The input mage to be manipulated.
+#
+#    gamma: The gamma that you want to change the image to with the image having a relative gamma of one.
+#
+# OUTPUT
+#
+#    res: The image after it's manipulation
+#
 def Gamma(img, gamma):
     lookUpTable = np.empty((1,256), np.uint8)
     for i in range(256):
@@ -78,6 +139,18 @@ def Gamma(img, gamma):
     res = cv.LUT(img, lookUpTable)
     return res
 
+# Contrast Limited Adaptive Histogram Equalization Algirithim with interpolation.
+#
+# INPUT
+#
+#    clipLim: The multiplicatitve limit for amplifacation
+#
+#    grideSize: The tile grid size for the interpoltation.
+#
+# OUTPUT
+#
+#    enhanced_img: The altered image output
+#
 def CLAHE(img, clipLim = 2.0, gridSize=(16,16)):
 
     lab= cv.cvtColor(img, cv.COLOR_BGR2LAB)
@@ -94,6 +167,24 @@ def CLAHE(img, clipLim = 2.0, gridSize=(16,16)):
     enhanced_img = cv.cvtColor(limg, cv.COLOR_LAB2BGR)
     return enhanced_img
 
+
+
+
+# Code taken from StackOverflow. Changes brightness and contrast 
+# https://stackoverflow.com/questions/39308030/how-do-i-increase-the-contrast-of-an-image-in-python-opencv
+#
+# INPUT
+#
+#    input_img: The image to be altered
+#
+#    brightness:
+#
+#    contrast:
+#
+# OUTPUT
+#
+#    buf: The altered image with changed contrast and brightness in BGR color space.
+#
 def apply_brightness_contrast(input_img, brightness = 0, contrast = 0):
     
     if brightness != 0:
@@ -119,6 +210,19 @@ def apply_brightness_contrast(input_img, brightness = 0, contrast = 0):
 
     return buf
 
+
+# An algirthim for changing the saturation by creating a lookup table using a univariate spline based on exponentiating the coeff given
+#
+# INPUT
+#
+#    img: The base image to be altered. Must be in BGR color space.
+#
+#    saturationCoeff: The coeffcient that in exponentiated to create the lookup table
+#
+# OUTPUT
+#
+#    output: The image after applying the saturation change in BGR color space.
+#
 def SaturateByCurve(img, saturationCoeff):
 
     hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
@@ -136,18 +240,55 @@ def SaturateByCurve(img, saturationCoeff):
 
     return output
 
+
+
+# Returns both inner and outer crop given coordinates of corners in polygon
+#
+# INPUT
+#
+#    img: The img you want to crop from
+#
+#    coords: The coordinates of the corners of the polygon you wish to crop
+#
+# OUTPUT
+#
+#    inner_crop: The area inside of your polygon with the rest of the image removed
+#
+#    outer_crop: The area outside of your polygon with the inside of the polygon turned white
+#
+def cropPolygon(img, coords):
+
+    ## (1) set bounded rectangle
+    coords = np.array(coords)
+    rect = cv.boundingRect(coords)
+    x,y,w,h = rect
+    croped = img[y:y+h, x:x+w].copy()
+
+    ## (2) make mask
+    pts = coords - coords.min(axis=0)
+
+    mask = np.zeros(croped.shape[:2], np.uint8)
+    cv.drawContours(mask, [pts], -1, (255, 255, 255), -1, cv.LINE_AA)
+
+    ## (3) do bit-op
+    inner_crop = cv.bitwise_and(croped, croped, mask=mask)
+
+    ## (4) Create outer crop
+    img_copy = img.copy()
+    outer_crop = cv.drawContours(img_copy, [coords], -1, (255, 255, 255), -1, cv.LINE_AA)
+    return inner_crop, outer_crop
+
 def main():
   base_img = cv.imread("./images/barn_house.jpg")
-  gamma = Gamma(base_img, 2)
-  frosted = Frosty(base_img)
-  toasted = Toasty(base_img)
-  vintage = VintageVibe(base_img)
-  saturate1 = SaturateByCurve(base_img, 0.1)
-  saturate2 = SaturateByCurve(base_img, 0.2)
-  saturate3 = SaturateByCurve(base_img, 0.3)
+  #croped_outer, croped_inner = cropPolygon(base_img, [[2000,45], [92,200], [63, 75]])
+  sat1 = SaturateByCurve(base_img, .1)
+  sat2 = SaturateByCurve(base_img, .2)
+  sat3 = SaturateByCurve(base_img, .3)
+
   #print(base_img.shape)
   dim = base_img.shape[:2]
-  Result.singleWindow([saturate1, saturate2, saturate3, base_img], dtype = "s", imDim = dim)
+  Result.singleWindow([sat1,sat2,sat3, base_img], dtype = "s", imDim = dim)
+  #Result.singleWindow([croped_inner])
 
 if __name__ == '__main__':
    main()
