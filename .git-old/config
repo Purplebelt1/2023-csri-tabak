@@ -1,0 +1,8 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+[remote "hope-and-pray"]
+	url = https://github.com/Purplebelt1/2023-csri-tabak.git
+	fetch = +refs/heads/*:refs/remotes/hope-and-pray/*
