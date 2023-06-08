@@ -1,0 +1,33 @@
+0000000000000000000000000000000000000000 9b13b87771dec78b7746e51e248680ff20e0d5dc ringoldj <justinringold@me.com> 1684856021 -0500	branch: Created from main
+9b13b87771dec78b7746e51e248680ff20e0d5dc e44e90bb81f72234996edfcfaf1f36b6c0d2df0f ringoldj <justinringold@me.com> 1684962975 -0500	commit: Added three images and modified them
+e44e90bb81f72234996edfcfaf1f36b6c0d2df0f e38a8323569614aa8fb64947a7828fb4be30cc53 ringoldj <justinringold@me.com> 1685029042 -0500	commit: altered imageManipulation to change color border
+e38a8323569614aa8fb64947a7828fb4be30cc53 ceb5bb2d5a957c1da45721e1aa6a4bfe13e72a3f ringoldj <justinringold@me.com> 1685048144 -0500	commit: cleaned up some code
+ceb5bb2d5a957c1da45721e1aa6a4bfe13e72a3f a4624956e36079ef148c241660906b2895a35c5f ringoldj <justinringold@me.com> 1685112633 -0500	commit: deleted excess code
+a4624956e36079ef148c241660906b2895a35c5f 5ac9e98a239d4de54d17980c11a3b73599a30f21 ringoldj <justinringold@me.com> 1685115102 -0500	commit (merge): Merge branch 'main' into justin-test
+5ac9e98a239d4de54d17980c11a3b73599a30f21 8ed62b91ed0b40eecd561fcf77dabf4e39897cbf ringoldj <justinringold@me.com> 1685115659 -0500	commit: cleaned up edging and commented
+8ed62b91ed0b40eecd561fcf77dabf4e39897cbf e7314f1a3ebb78cdd4bfbc49ee6d6554df85114c ringoldj <justinringold@me.com> 1685117227 -0500	commit: added comments to fade and cleaned up code
+e7314f1a3ebb78cdd4bfbc49ee6d6554df85114c 2085ee036606c0f533e71f9f935c3ef18468f874 ringoldj <justinringold@me.com> 1685118629 -0500	commit: cleaned up imageManipulation code
+2085ee036606c0f533e71f9f935c3ef18468f874 948b89dbb9c690740dbb19c1b8ef1dc2a5c581f5 ringoldj <justinringold@me.com> 1685118753 -0500	commit: deleted outline
+948b89dbb9c690740dbb19c1b8ef1dc2a5c581f5 23f153547c07fa47d838e6eb948490b8ded916f8 ringoldj <justinringold@me.com> 1685119093 -0500	commit: cleaned up code and added comments to point
+23f153547c07fa47d838e6eb948490b8ded916f8 82e9ff82adee749279b53cd7ad144094ba930170 ringoldj <justinringold@me.com> 1685130768 -0500	commit: added modiffied flowers
+82e9ff82adee749279b53cd7ad144094ba930170 eaefff86a49f85b3cff225f82ee2feaa906fd996 ringoldj <justinringold@me.com> 1685464761 -0500	commit: made vignette filter with Leon's code
+eaefff86a49f85b3cff225f82ee2feaa906fd996 c902d5923b7a332a3ba639b257a2d0eb68a33d98 ringoldj <justinringold@me.com> 1685474075 -0500	commit: vinette filter updated
+c902d5923b7a332a3ba639b257a2d0eb68a33d98 b40379b2b13238671e533fa683592f83d815dfa0 ringoldj <justinringold@me.com> 1685475519 -0500	commit: made
+b40379b2b13238671e533fa683592f83d815dfa0 01cd106447cd1fec8bf5e6ec9127e1826f26ca28 ringoldj <justinringold@me.com> 1685477034 -0500	commit: ammendment to previous commit message
+01cd106447cd1fec8bf5e6ec9127e1826f26ca28 23bae46eaafea4a85d17683ed767741f14f12d58 ringoldj <justinringold@me.com> 1685552829 -0500	commit: Added Chopchop which uses ImageChops
+23bae46eaafea4a85d17683ed767741f14f12d58 50efb30a2af30205743962127dc925b87aa72533 ringoldj <justinringold@me.com> 1685559218 -0500	commit: added finished images to results
+50efb30a2af30205743962127dc925b87aa72533 382e9e0d94e06635421290d8a56d1eb4fcca730d ringoldj <justinringold@me.com> 1685564811 -0500	commit: adjusted edging and added checkers methods
+382e9e0d94e06635421290d8a56d1eb4fcca730d 443ee60d6db9337812723adf2492fd1afac9fd74 ringoldj <justinringold@me.com> 1685629490 -0500	commit: added more comments
+443ee60d6db9337812723adf2492fd1afac9fd74 fc37790e7d5e6ce302659cc13a059a544ff8b437 ringoldj <justinringold@me.com> 1685636425 -0500	commit: added two images
+fc37790e7d5e6ce302659cc13a059a544ff8b437 8ff8e7783143dfd1bb9ac9aba7ef89df0c5b1763 ringoldj <justinringold@me.com> 1685637177 -0500	merge main: Merge made by the 'ort' strategy.
+8ff8e7783143dfd1bb9ac9aba7ef89df0c5b1763 29dadb70b33511c2c351015b7f2dfbc5fbd5a28a ringoldj <justinringold@me.com> 1685649490 -0500	commit: Added images
+29dadb70b33511c2c351015b7f2dfbc5fbd5a28a 023be983b6d821e7316f32755166c36b237facc3 ringoldj <justinringold@me.com> 1685727333 -0500	commit: added images
+023be983b6d821e7316f32755166c36b237facc3 a212dea0df9cea3562fb07828b1fbe8c26000b25 ringoldj <justinringold@me.com> 1685733207 -0500	commit: added images
+a212dea0df9cea3562fb07828b1fbe8c26000b25 423a02e9dc8ddd92e7b0c51a10b36395bc2f2dec ringoldj <justinringold@me.com> 1685733229 -0500	commit: added images
+423a02e9dc8ddd92e7b0c51a10b36395bc2f2dec fba5a0bf7d31df1b52ef976c198570bcd823b3cf ringoldj <justinringold@me.com> 1685733983 -0500	commit: changed image name
+fba5a0bf7d31df1b52ef976c198570bcd823b3cf 69964d2a2b3889739e5659a8338ad22952bb697a ringoldj <justinringold@me.com> 1685993932 -0500	commit: Added images
+69964d2a2b3889739e5659a8338ad22952bb697a 8d65d34e78eec7905145e7d0ca344dbe067b5b1e ringoldj <justinringold@me.com> 1685994454 -0500	commit: started cv
+8d65d34e78eec7905145e7d0ca344dbe067b5b1e 111cad5d0b5b843e0b12320d73af1a00304bb4bb ringoldj <justinringold@me.com> 1685999088 -0500	commit: blame Will
+111cad5d0b5b843e0b12320d73af1a00304bb4bb a7325683ecf06992a043d351536ef6015d39689a ringoldj <justinringold@me.com> 1686065221 -0500	commit: starting opencv
+a7325683ecf06992a043d351536ef6015d39689a 8de58ee91fe6c1a7fc4475974bf479cdf96e070f ringoldj <justinringold@me.com> 1686065234 -0500	merge main: Merge made by the 'ort' strategy.
+8de58ee91fe6c1a7fc4475974bf479cdf96e070f da2d8d728dfdd57e84e2212e955da265a5e24324 ringoldj <justinringold@me.com> 1686065653 -0500	commit: more cv
