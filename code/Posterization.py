@@ -20,10 +20,10 @@ def kMeanPosterization(img , clusters):
     return quant
 
 def main():
-    path = "./images/wolf.jpg"
+    path = "./images/calm_water.JPG"
     base_img = cv.imread(path)
 
-    posterized1 = basicPosterization(base_img, 3)
+    posterized1 = kMeanPosterization(base_img, 3)
     posterized2 = kMeanPosterization(base_img, 6)
 
     Result.multiWindow([base_img,posterized1, posterized2])

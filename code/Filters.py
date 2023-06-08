@@ -26,6 +26,115 @@ def LookupTable(x, y):
     return LUT
 
 
+def drawRegularPolygon(img, coords, size, sides, thickness, color, rotation, fill_type = "none"):
+
+    coords[0] = round(coords[0])
+    coords[1] = round(coords[1])
+
+
+    img = img.copy()
+
+
+    pts1 = np.empty([sides, 1], dtype = int)
+    pts2 = np.empty([sides, 1], dtype = int)
+
+    for i in range(len(pts1)):
+
+        pts1[i] = round(math.cos((i+1)/sides*2*math.pi + rotation) * size) + coords[0]
+        pts2[i] = round(math.sin((i+1)/sides*2*math.pi + rotation) * size) + coords[1]
+    
+
+    
+
+
+    if fill_type == "center":
+        pts1 = np.clip(pts1, 0, img.shape[1] * 2)
+        pts2 = np.clip(pts2, 0, img.shape[0] * 2)
+
+        pts = np.concatenate((pts1,pts2), axis=1)
+        if coords[0] < 0 or coords[0] >= img.shape[1] or coords[1] < 0 or coords[1] >= img.shape[0]:
+            color_tuple = (255,255,255)
+        else:
+            color_tuple = tuple([int(i) for i in img[coords[1]][coords[0]]])
+        img = cv.fillPoly(img, pts=[pts], color=color_tuple)
+
+    elif fill_type == "average":
+        pts1 = np.clip(pts1, 0, img.shape[1])
+        pts2 = np.clip(pts2, 0, img.shape[0])
+        pts = np.concatenate((pts1,pts2), axis=1)
+
+        mask = np.zeros(img.shape[:2], np.uint8)
+        mask = cv.drawContours(mask, [pts], -1, 255, -1)
+        mean_color = cv.mean(img, mask=mask)
+        img = cv.fillPoly(img, pts=[pts], color=mean_color)
+
+
+
+    else:
+        img = cv.polylines(img, [pts], True, color, thickness)
+
+    return img
+    
+    
+def drawRegularTessellation(img, size, thickness, color, shape):
+    img = img.copy()
+    shape = shape.lower()
+    if shape == "triangle":
+        sides = 3
+        row_move_horz = size*math.sqrt(3)/2
+        row_move_vert = size/2
+        col_move_horz = -1 * size * math.sqrt(3)/2
+        col_move_vert = size * 1.5
+        col_rot = 0
+        row_rot = math.pi
+        start_rot = 1/6*math.pi
+    elif shape == "square":
+        sides = 4
+        row_move_horz = size/math.sqrt(2)*2
+        row_move_vert = 0
+        col_move_horz = 0
+        col_move_vert = size/math.sqrt(2)*2
+        row_rot = 0
+        col_rot = 0
+        start_rot = .25*math.pi
+    elif shape == "hexagon":
+        sides = 6
+        row_move_horz = size * 3
+        row_move_vert = 0
+        col_move_horz = 3*size/2
+        col_move_vert = size/2*math.sqrt(3)
+        row_rot = 0
+        col_rot = 0
+        start_rot = 0
+    else:
+        ValueError("shape must be either triangle, square, or hexagon!")
+    
+    per_row = round(img.shape[1]/(row_move_horz) + 2)
+    per_col = round(img.shape[0]/(col_move_vert) + 2)
+    #per_col = 1
+
+    print(per_row)
+    print(per_col)
+
+    coords = [0, 0]
+
+
+    for i in range(per_col):
+        for j in range(per_row):
+
+            coords[1] = round((col_move_vert * i) + (row_move_vert * ((j+1)%2)))
+            
+            img = drawRegularPolygon(img, coords, size, sides, thickness, color, i%2 * col_rot + j%2 * row_rot + start_rot, "average")
+
+            coords[0] += row_move_horz
+            coords[0] = round(coords[0])
+
+
+        coords[0] = round((i+1)%2 * col_move_horz)
+        #coords[1] = col_move_vert * (i+1)
+
+    return img
+
 def readCoordsFromFile(path):
     file = open(path, 'r')
     lines = file.readlines()
@@ -153,7 +262,7 @@ def Halloween(img, dark=3):
 #
 # INPUT
 #
-#    img: The input mage to be manipulated.
+#    img: The input image to be manipulated.
 #
 #    gamma: The gamma that you want to change the image to with the image having a relative gamma of one.
 #
@@ -309,19 +418,19 @@ def cropPolygon(img, coords):
 
 def main():
   base_img = cv.imread("./images/skyline.jpg")
-  print(base_img)
-  coords = readCoordsFromFile("./resources/coords")
-  icrop, ocrop = cropPolygon(base_img, coords)
+  #hexaGONE = drawRegularPolygon(base_img, [1000,1000], 100, 3, 10, (0,0,255), 0)
+
+  hexagonTess = drawRegularTessellation(base_img, 25, 5, (0,0,0), "hexagon")
+  triangleTess = drawRegularTessellation(base_img, 25, 5, (0,0,0), "triangle")
+  squareTess = drawRegularTessellation(base_img, 25, 5, (0,0,0), "square")
   #print(base_img.shape)
   #croped_outer, croped_inner = cropPolygon(base_img, [[2000,45], [92,200], [63, 75]])
   #thresh, mask = colorInRangeThreshold(base_img, (100,20,10), (115,255,255), True)
   #thresh, mask = colorInRangeThreshold(base_img, (0,0,0), (179,255,255))
-  sat1 = SaturateByCurve(base_img, .1)
-  sat2 = SaturateByCurve(base_img, .2)
-  sat3 = SaturateByCurve(base_img, .3)
+
 
   dim = base_img.shape[:2]
-  Result.multiWindow([ocrop, icrop , base_img])
+  Result.singleWindow([hexagonTess, triangleTess, squareTess, base_img], imDim = dim, dtype = "s")
   #Result.singleWindow([croped_inner])
 
 if __name__ == '__main__':
