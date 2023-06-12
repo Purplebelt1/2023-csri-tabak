@@ -7,6 +7,6 @@ org = (100, 500)
 fontScale = 3
 color = (255, 0, 255)
 thickness = 10
-image = cv.putText(image, 'WHYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY!', org, font, 
+image = cv.putText(image, 'J Dawg!', org, font, 
                    fontScale, color, thickness, cv.LINE_AA)
 Result.singleWindow(image)
