@@ -76,7 +76,7 @@ def splitComplimentary(img, hue, go_to_nearest_hue = True):
         hue_hue = np.where(np.logical_and((hue_true_dst <= sec_true_dst), (hue_true_dst <= ter_true_dst)), hue, -1)
         hue_sec = np.where(np.logical_and(hue_hue == -1, (sec_true_dst <= ter_true_dst)), sec, hue_hue)
         new_hue = np.where(hue_sec == -1, ter, hue_sec).astype('uint8')
-        ret_im = cv.merge((new_hue))
+        ret_im = cv.merge((new_hue,s,v))
     else:
         new_ter = np.where(h < 60, ter, 181)
         new_hue = np.where(np.logical_and((new_ter == 181), (h < 120)), hue, new_ter)
@@ -116,19 +116,38 @@ def tetradic(img, hue):
     return ret_im    
 
 
-def main():
-    im = cv.imread('images/warm_sun.jpg')
-    chg01 = monochromatic(im, 45)
-    chg02 = monochromatic(im, 90)
-    chg03 = monochromatic(im, 135)
-    chg04 = monochromatic(im, 180)
-    chg = opposites(im, 160)
-    chg2 = tertiary(im, 0)
-    chg3 = splitComplimentary(im, 90)
-    chg4 = analogous(im, 160)
-    chg5 = tetradic(im, 160)
+def value_split(img):
+    im = img.copy()
+    hsv = cv.cvtColor(im, cv.COLOR_BGR2HSV)
+    h,s,v = cv.split(hsv)
+    print(v)
+    new_val = np.multiply(np.divide(v, 42).astype('uint8'), 42).astype('uint8')
+    print(new_val)
+    ret_im = cv.merge((h,s,new_val))
+    ret_im = cv.cvtColor(ret_im, cv.COLOR_HSV2BGR)
+    return ret_im    
 
-    Result.singleWindow([chg3], imDim = im.shape[:2])
+def main():
+    im2 = cv.imread('images/puppies/IMG_3304.jpeg')#('images/puppies/IMG_2876.jpeg')
+    im = cv.imread('images/italy/IMG_5845.jpeg')
+    #chg01 = monochromatic(im, 45)
+    #chg02 = monochromatic(im, 70)
+    #chg03 = monochromatic(im, 135)
+    #chg04 = monochromatic(im, 180)
+    #chg = opposites(im, 150)
+    #print(im.shape)
+    #chg2 = tertiary(im, 20)
+    #chg3 = splitComplimentary(im, 20)
+    chg40 = analogous(im2, 70)
+    chg50 = analogous(im, 75)
+    #chg60 = analogous(im, 80)
+    chgchg = value_split(im)
+    chgchg = monochromatic(chgchg, 70)
+    im = monochromatic(im, 70)
+    im = cv.resize(im, (im.shape[0]*round(4032/im.shape[1]), 4032), interpolation = cv.INTER_AREA)
+    #chg5 = tetradic(im, 76)
+   
+    Result.singleWindow([chg40, im], imDim = im.shape[:2])
 
 if __name__ == '__main__':
     main() 

@@ -211,9 +211,10 @@ def vignette(im, px, py, radius, finalDistance):
 
 def main():
     #test image
-    original = Image.open('images/water _view.JPG')
-    im = vignette(original, 0.5, 0.5, 0.2, 0.3)
+    original = Image.open('images/puppies/complementary_puppy.jpg')
+    #im = vignette(original, 0.5, 0.45, 0.15, 0.25)
+    im = original.crop((0,(original.size[1]) // 10,(original.size[0] * 9) // 10, (original.size[1] * 9) // 10))
     im.show()
-    
+   
 if __name__ == '__main__':
     main()
