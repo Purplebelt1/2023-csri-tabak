@@ -417,20 +417,22 @@ def cropPolygon(img, coords):
     return inner_crop, outer_crop
 
 def main():
-  base_img = cv.imread("./images/skyline.jpg")
+  new_img = cv.imread("./images/justin/old_bridge.jpeg")
   #hexaGONE = drawRegularPolygon(base_img, [1000,1000], 100, 3, 10, (0,0,255), 0)
-
-  hexagonTess = drawRegularTessellation(base_img, 25, 5, (0,0,0), "hexagon")
-  triangleTess = drawRegularTessellation(base_img, 25, 5, (0,0,0), "triangle")
-  squareTess = drawRegularTessellation(base_img, 25, 5, (0,0,0), "square")
+  new_img = CLAHE(new_img, 1.0, (16,16))
+  new_img = SaturateByCurve(new_img, .1)
+  new_img = Toasty(new_img)
+  new_img = drawRegularTessellation(new_img, 3, 5, (0,0,0), "triangle")
+  #triangleTess = drawRegularTessellation(base_img, 25, 5, (0,0,0), "triangle")
+  #squareTess = drawRegularTessellation(base_img, 25, 5, (0,0,0), "square")
   #print(base_img.shape)
   #croped_outer, croped_inner = cropPolygon(base_img, [[2000,45], [92,200], [63, 75]])
   #thresh, mask = colorInRangeThreshold(base_img, (100,20,10), (115,255,255), True)
   #thresh, mask = colorInRangeThreshold(base_img, (0,0,0), (179,255,255))
 
 
-  dim = base_img.shape[:2]
-  Result.singleWindow([hexagonTess, triangleTess, squareTess, base_img], imDim = dim, dtype = "s")
+  dim = new_img.shape[:2]
+  Result.singleWindow([new_img], imDim = dim, dtype = "h")
   #Result.singleWindow([croped_inner])
 
 if __name__ == '__main__':
