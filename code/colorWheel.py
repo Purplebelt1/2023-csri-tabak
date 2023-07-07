@@ -279,7 +279,7 @@ def main():
     #im = cv.imread('images/new/IMG_3691.jpeg')
     #im = cv.imread('images/new/IMG_3693.jpeg')
     #im = cv.imread('images/new/IMG_3728.jpeg')
-    im = cv.imread('images/new/IMG_3731.jpeg')
+    im = cv.imread('images/justin/IMG_3731.jpeg')
 
     #im2 = split_complimentary_shadows(im, 90, 20, 80)
     #im3 = analogous_shadows(im, 70)
@@ -297,8 +297,8 @@ def main():
     
     #im2 = split_complimentary_shadows(im, 100, 20, 60)
     
-    cv.imwrite('undecided.jpg', im2)
-    cv.imwrite('undecided2.jpg', im3)
+    #cv.imwrite('undecided.jpg', im2)
+    #cv.imwrite('undecided2.jpg', im3)
 
 
    
