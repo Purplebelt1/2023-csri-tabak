@@ -26,6 +26,8 @@ def LookupTable(x, y):
     return LUT
 
 
+
+
 def drawRegularPolygon(img, coords, size, sides, thickness, color, rotation, fill_type = "none"):
 
     coords[0] = round(coords[0])
@@ -38,10 +40,16 @@ def drawRegularPolygon(img, coords, size, sides, thickness, color, rotation, fil
     pts1 = np.empty([sides, 1], dtype = int)
     pts2 = np.empty([sides, 1], dtype = int)
 
-    for i in range(len(pts1)):
+    angles = np.linspace(1, 2 * math.pi, sides, endpoint=False)
+    cos_vals = np.cos(angles + rotation) * size + coords[0]
+    sin_vals = np.sin(angles + rotation) * size + coords[1]
+    pts1 = np.round(cos_vals).astype(int)
+    pts2 = np.round(sin_vals).astype(int)
 
-        pts1[i] = round(math.cos((i+1)/sides*2*math.pi + rotation) * size) + coords[0]
-        pts2[i] = round(math.sin((i+1)/sides*2*math.pi + rotation) * size) + coords[1]
+    #for i in range(len(pts1)):
+
+    #    pts1[i] = round(math.cos((i+1)/sides*2*math.pi + rotation) * size) + coords[0]
+    #    pts2[i] = round(math.sin((i+1)/sides*2*math.pi + rotation) * size) + coords[1]
     
 
     
@@ -61,7 +69,8 @@ def drawRegularPolygon(img, coords, size, sides, thickness, color, rotation, fil
     elif fill_type == "average":
         pts1 = np.clip(pts1, 0, img.shape[1])
         pts2 = np.clip(pts2, 0, img.shape[0])
-        pts = np.concatenate((pts1,pts2), axis=1)
+        pts = np.column_stack((pts1,pts2))
+        #print(pts)
 
         mask = np.zeros(img.shape[:2], np.uint8)
         mask = cv.drawContours(mask, [pts], -1, 255, -1)
@@ -85,7 +94,6 @@ def drawRegularTessellation(img, size, thickness, color, shape):
         row_move_vert = size/2
         col_move_horz = -1 * size * math.sqrt(3)/2
         col_move_vert = size * 1.5
-        col_rot = 0
         row_rot = math.pi
         start_rot = 1/6*math.pi
     elif shape == "square":
@@ -95,7 +103,6 @@ def drawRegularTessellation(img, size, thickness, color, shape):
         col_move_horz = 0
         col_move_vert = size/math.sqrt(2)*2
         row_rot = 0
-        col_rot = 0
         start_rot = .25*math.pi
     elif shape == "hexagon":
         sides = 6
@@ -104,7 +111,6 @@ def drawRegularTessellation(img, size, thickness, color, shape):
         col_move_horz = 3*size/2
         col_move_vert = size/2*math.sqrt(3)
         row_rot = 0
-        col_rot = 0
         start_rot = 0
     else:
         ValueError("shape must be either triangle, square, or hexagon!")
@@ -118,19 +124,23 @@ def drawRegularTessellation(img, size, thickness, color, shape):
 
     coords = [0, 0]
 
-
-    for i in range(per_col):
-        for j in range(per_row):
+    i = 0
+    while coords[1] < img.shape[0]:
+        j = 0
+        while coords[0] < img.shape[1]:
 
             coords[1] = round((col_move_vert * i) + (row_move_vert * ((j+1)%2)))
             
-            img = drawRegularPolygon(img, coords, size, sides, thickness, color, i%2 * col_rot + j%2 * row_rot + start_rot, "average")
+            img = drawRegularPolygon(img, coords, size, sides, thickness, color, j%2 * row_rot + start_rot, "average")
 
             coords[0] += row_move_horz
             coords[0] = round(coords[0])
 
+            j += 1
+
 
         coords[0] = round((i+1)%2 * col_move_horz)
+        i += 1
         #coords[1] = col_move_vert * (i+1)
 
     return img
@@ -417,12 +427,13 @@ def cropPolygon(img, coords):
     return inner_crop, outer_crop
 
 def main():
-  new_img = cv.imread("./images/justin/old_bridge.jpeg")
+  base_img = cv.imread("./results/Purple_sky.jpg")
+  #new_img = cv.imread("./images/justin/old_bridge.jpeg")
   #hexaGONE = drawRegularPolygon(base_img, [1000,1000], 100, 3, 10, (0,0,255), 0)
-  new_img = CLAHE(new_img, 1.0, (16,16))
-  new_img = SaturateByCurve(new_img, .1)
-  new_img = Toasty(new_img)
-  new_img = drawRegularTessellation(new_img, 3, 5, (0,0,0), "triangle")
+  #new_img = CLAHE(new_img, 1.0, (16,16))
+  #new_img = SaturateByCurve(new_img, .1)
+  #new_img = Toasty(new_img)
+  new_img = drawRegularTessellation(base_img, 50, 5, (0,0,0), "triangle")
   #triangleTess = drawRegularTessellation(base_img, 25, 5, (0,0,0), "triangle")
   #squareTess = drawRegularTessellation(base_img, 25, 5, (0,0,0), "square")
   #print(base_img.shape)
