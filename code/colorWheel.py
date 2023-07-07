@@ -7,11 +7,17 @@ import Posterization
 
 
 def monochromatic(img, hue):
+    #changes all hues in img to to hue and returns new image
+    #copies img and converts it to hsv
     im = img.copy()
     hsv = cv.cvtColor(im, cv.COLOR_BGR2HSV)
+    #prevents hue from being outside applicable range
     hue = hue % 180
+    #splits image into hue, saturation, and value channels
     h,s,v = cv.split(hsv)
+    #makes new hue channel
     new_hue = (np.ones(h.shape) * hue).astype('uint8')
+    #merges new hue channel with other channels and converts back to bgr
     ret_im = cv.merge((new_hue,s,v))
     ret_im = cv.cvtColor(ret_im, cv.COLOR_HSV2BGR)
     return ret_im
@@ -20,11 +26,17 @@ def monochromatic(img, hue):
 
 
 def opposites(img, hue):
+    #changes all hues in img to to hue or its complementary color and returns new image
+    #copies img and converts it to hsv
     im = img.copy()
     hsv = cv.cvtColor(im, cv.COLOR_BGR2HSV)
+    #prevents hue from being outside applicable range and calculates opisite hue
     hue = hue % 180
     opis = (hue + 90) % 180
+    #splits image into hue, saturation, and value channels
     h,s,v = cv.split(hsv)
+    #makes new hue channel where hues are changed to hue or opis depending
+    #on which is closer in value
     hue_dst = np.where(h > hue, h - hue, hue - h)
     hue_alt = np.subtract(np.add(h, 180), hue)
     hue_true_dst = np.where(hue_dst <= hue_alt, hue_dst, hue_alt)
@@ -32,17 +44,24 @@ def opposites(img, hue):
     opis_alt = np.subtract(np.add(h, 180), opis)
     opis_true_dst = np.where(opis_dst <= opis_alt, opis_dst, opis_alt)
     new_hue = np.where(hue_true_dst <= opis_true_dst, hue, opis).astype('uint8')
+    #merges new hue channel with other channels and converts back to bgr
     ret_im = cv.merge((new_hue,s,v))
     ret_im = cv.cvtColor(ret_im, cv.COLOR_HSV2BGR)
     return ret_im
 
 def tertiary(img, hue):
+    #changes all hues in img to to hue or its tertiary colors and returns new image
+    #copies img and converts it to hsv
     im = img.copy()
     hsv = cv.cvtColor(im, cv.COLOR_BGR2HSV)
-    hue = abs(hue % 180)
+    #prevents hue from being outside applicable range and calculates tertiary hues
+    hue = hue % 180
     sec = (hue + 60) % 180
     ter = (hue + 120) % 180
+    #splits image into hue, saturation, and value channels
     h,s,v = cv.split(hsv)
+    #makes new hue channel where hues are changed to hue, sec, or ter depending
+    #on which is closer in value
     hue_dst = np.where(h > hue, h - hue, hue - h)
     hue_alt = np.subtract(np.add(h, 180), hue)
     hue_true_dst = np.where(hue_dst <= hue_alt, hue_dst, hue_alt)
@@ -55,18 +74,28 @@ def tertiary(img, hue):
     hue_hue = np.where(np.logical_and((hue_true_dst <= sec_true_dst), (hue_true_dst <= ter_true_dst)), hue, -1)
     hue_sec = np.where(np.logical_and(hue_hue == -1, (sec_true_dst <= ter_true_dst)), sec, hue_hue)
     new_hue = np.where(hue_sec == -1, ter, hue_sec).astype('uint8')
+    #merges new hue channel with other channels and converts back to bgr
     ret_im = cv.merge((new_hue,s,v))
     ret_im = cv.cvtColor(ret_im, cv.COLOR_HSV2BGR)
     return ret_im
     
 
 def split_complimentary(img, hue, go_to_nearest_hue = True):
+    #changes all hues in img to to hue or its split complimentary colors and returns new image
+    #go_to_nearest_hue determines whether hue go to the nearest applicable hue
+    #or whether a set range of hue are changed regardless of distance 
+    #copies img and converts it to hsv
     im = img.copy()
     hsv = cv.cvtColor(im, cv.COLOR_BGR2HSV)
+    #prevents hue from being outside applicable range and calculates split complimentary hues
     hue = hue % 180
     sec = (hue + 105) % 180
     ter = (hue + 75) % 180
+    #splits image into hue, saturation, and value channels
     h,s,v = cv.split(hsv)
+    #makes new hue channel where hues are changed to hue, sec, or ter depending
+    #on which is closer in value if go_to_nearest is True
+    #otherwise hues in seat ranges are changed to hue, sec, or der regardless of distance
     if go_to_nearest_hue:
         hue_dst = np.where(h > hue, h - hue, hue - h)
         hue_alt = np.subtract(np.add(h, 180), hue)
@@ -80,59 +109,84 @@ def split_complimentary(img, hue, go_to_nearest_hue = True):
         hue_hue = np.where(np.logical_and((hue_true_dst <= sec_true_dst), (hue_true_dst <= ter_true_dst)), hue, -1)
         hue_sec = np.where(np.logical_and(hue_hue == -1, (sec_true_dst <= ter_true_dst)), sec, hue_hue)
         new_hue = np.where(hue_sec == -1, ter, hue_sec).astype('uint8')
-        ret_im = cv.merge((new_hue,s,v))
     else:
         new_ter = np.where(h < 60, ter, 181)
-        new_hue = np.where(np.logical_and((new_ter == 181), (h < 120)), hue, new_ter)
-        new_sec = np.where(new_hue == 181, sec, new_hue).astype('uint8')
-        ret_im = cv.merge((new_sec,s,v))
+        new_sec = np.where(np.logical_and((new_ter == 181), (h < 120)), hue, new_ter)
+        new_hue = np.where(new_sec == 181, sec, new_sec).astype('uint8')
+    #merges new hue channel with other channels and converts back to bgr
+    ret_im = cv.merge((new_hue,s,v))
     ret_im = cv.cvtColor(ret_im, cv.COLOR_HSV2BGR)
     return ret_im
 
 
 def split_complimentary_shadows(img, hue, lbound = 20, hbound = 80):
+    #changes all hues in img to to hue or its split complimentary colors and returns new image
+    #lbound and hbound determine the value percentiles that act as boundaries between hues
+    #copies img and converts it to hsv
     im = img.copy()
     hsv = cv.cvtColor(im, cv.COLOR_BGR2HSV)
+    #splits image into hue, saturation, and value channels
     h,s,v = cv.split(hsv)
+    #prevents hue from being outside applicable range and calculates split complimentary hues
     hue = hue % 180
     bri = (hue + 105) % 180
     dar = (hue + 75) % 180
+    #finds value matching the percentiles of lbound and hbound
     low = np.percentile(v, lbound)
     high = np.percentile(v, hbound)
+    #makes new hue channel where hues are changed to hue, bri, or dar depending
+    #on the values at the location of the hue
     new_dar = np.where(v < low, dar, 181)
     new_bri = np.where(v > high, bri, new_dar)
     new_hue = np.where(new_bri == 181, hue, new_bri).astype('uint8')
+    #merges new hue channel with other channels and converts back to bgr
     ret_im = cv.merge((new_hue, s, v))
     ret_im = cv.cvtColor(ret_im, cv.COLOR_HSV2BGR)
     return ret_im
 
 
 def analogous(img, hue):
+    #changes all hues in img to to hue or its analagous colors and returns new image
+    #copies img and converts it to hsv
     im = img.copy()
     hsv = cv.cvtColor(im, cv.COLOR_BGR2HSV)
+    #splits image into hue, saturation, and value channels
     h,s,v = cv.split(hsv)
+    #prevents hue from being outside applicable range and calculates analagous hues
     hue = hue % 180
     sec = (hue + 15) % 180
     ter = (hue - 15) % 180
+    #makes new hue channel where hues are changed to hue, sec, or ter depending
+    #on which is closer in value
     new_ter = np.where(h < 60, ter, 181)
     new_hue = np.where(np.logical_and((new_ter == 181), (h < 120)), hue, new_ter)
     new_sec = np.where(new_hue == 181, sec, new_hue).astype('uint8')
+    #merges new hue channel with other channels and converts back to bgr
     ret_im = cv.merge((new_sec, s, v))
     ret_im = cv.cvtColor(ret_im, cv.COLOR_HSV2BGR)
     return ret_im
 
 def analogous_shadows(img, hue, lbound = 20, hbound = 80):
+    #changes all hues in img to to hue or its analagous colors and returns new image
+    #lbound and hbound determine the value percentiles that act as boundaries between hues
+    #copies img and converts it to hsv
     im = img.copy()
     hsv = cv.cvtColor(im, cv.COLOR_BGR2HSV)
+    #splits image into hue, saturation, and value channels
     h,s,v = cv.split(hsv)
+    #prevents hue from being outside applicable range and calculates analagous hues
     hue = hue % 180
     bri = (hue + 15) % 180
     dar = (hue - 15) % 180
+    #finds value matching the percentiles of lbound and hbound
     low = np.percentile(v, lbound)
     high = np.percentile(v, hbound)
+    #makes new hue channel where hues are changed to hue, bri, or dar depending
+    #on the values at the location of the hue
     new_dar = np.where(v < low, dar, 181)
     new_bri = np.where(v > high, bri, new_dar)
     new_hue = np.where(new_bri == 181, hue, new_bri).astype('uint8')
+    #merges new hue channel with other channels and converts back to bgr
     ret_im = cv.merge((new_hue, s, v))
     ret_im = cv.cvtColor(ret_im, cv.COLOR_HSV2BGR)
     return ret_im
@@ -251,11 +305,16 @@ def set_saturation(img, sat):
     return ret_im
 
 def set_value(img, val):
+    #changes all values in img to val and returns new image
+    #copies img, converts it to hsv, and makes sure val is within aplicable range
     im = img.copy()
     val = val % 256
     hsv = cv.cvtColor(im, cv.COLOR_BGR2HSV)
+    #splits image into hue, saturation, and value channels
     h,s,v = cv.split(hsv)
+    #makes new value channel
     new_val = (np.ones(v.shape) * val).astype('uint8')
+    #merges new value channel with other channels and converts back to bgr
     ret_im = cv.merge((h,s,new_val))
     ret_im = cv.cvtColor(ret_im, cv.COLOR_HSV2BGR)
     return ret_im
