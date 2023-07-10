@@ -40,16 +40,16 @@ def drawRegularPolygon(img, coords, size, sides, thickness, color, rotation, fil
     pts1 = np.empty([sides, 1], dtype = int)
     pts2 = np.empty([sides, 1], dtype = int)
 
-    angles = np.linspace(1, 2 * math.pi, sides, endpoint=False)
-    cos_vals = np.cos(angles + rotation) * size + coords[0]
-    sin_vals = np.sin(angles + rotation) * size + coords[1]
-    pts1 = np.round(cos_vals).astype(int)
-    pts2 = np.round(sin_vals).astype(int)
+    #angles = np.linspace(1, 2 * math.pi, sides, endpoint=False) + rotation
+    #cos_vals = np.cos(angles) * size + coords[0]
+    #sin_vals = np.sin(angles) * size + coords[1]
+    #pts1 = np.round(cos_vals).astype(int)
+    #pts2 = np.round(sin_vals).astype(int)
 
-    #for i in range(len(pts1)):
+    for i in range(len(pts1)):
 
-    #    pts1[i] = round(math.cos((i+1)/sides*2*math.pi + rotation) * size) + coords[0]
-    #    pts2[i] = round(math.sin((i+1)/sides*2*math.pi + rotation) * size) + coords[1]
+        pts1[i] = round(math.cos((i+1)/sides*2*math.pi + rotation) * size) + coords[0]
+        pts2[i] = round(math.sin((i+1)/sides*2*math.pi + rotation) * size) + coords[1]
     
 
     
@@ -69,7 +69,8 @@ def drawRegularPolygon(img, coords, size, sides, thickness, color, rotation, fil
     elif fill_type == "average":
         pts1 = np.clip(pts1, 0, img.shape[1])
         pts2 = np.clip(pts2, 0, img.shape[0])
-        pts = np.column_stack((pts1,pts2))
+        #pts = np.column_stack((pts1,pts2))
+        pts = np.concatenate((pts1,pts2), axis=1)
         #print(pts)
 
         mask = np.zeros(img.shape[:2], np.uint8)
@@ -427,13 +428,13 @@ def cropPolygon(img, coords):
     return inner_crop, outer_crop
 
 def main():
-  base_img = cv.imread("./results/Purple_sky.jpg")
+  base_img = cv.imread("./images/skyline.jpg")
   #new_img = cv.imread("./images/justin/old_bridge.jpeg")
   #hexaGONE = drawRegularPolygon(base_img, [1000,1000], 100, 3, 10, (0,0,255), 0)
   #new_img = CLAHE(new_img, 1.0, (16,16))
   #new_img = SaturateByCurve(new_img, .1)
   #new_img = Toasty(new_img)
-  new_img = drawRegularTessellation(base_img, 50, 5, (0,0,0), "triangle")
+  new_img = drawRegularTessellation(base_img, 100, 5, (0,0,0), "hexagon")
   #triangleTess = drawRegularTessellation(base_img, 25, 5, (0,0,0), "triangle")
   #squareTess = drawRegularTessellation(base_img, 25, 5, (0,0,0), "square")
   #print(base_img.shape)

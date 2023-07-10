@@ -1,8 +1,8 @@
 import math
 import cv2 as cv
 import numpy as np
-import Filters
-import Posterization
+from Filters import Toasty, Frosty
+from Posterization import kMeanPosterization
 import scipy.stats as stats
 import skimage
 
@@ -109,33 +109,28 @@ def calculate_entropy(img):
 
 
 def main():
-    pic_list = ["baboon.png","fruits.png","HappyFish.jpg","peppers.png","tulips.png"]
+    pic_list = ["baboon.png", "fruits.png", "HappyFish.jpg", "peppers.png", "tulips.png"]
     dir = "./images/standard_test_images/"
-    warm_values = [[],[],[]]
-    cold_values = [[],[],[]]
-    poster_4_values = [[],[],[]]
-    poster_5_values = [[],[],[]]
-    poster_6_values = [[],[],[]]
-    poster_7_values = [[],[],[]]
-    poster_8_values = [[],[],[]]
-    values_lst = [warm_values,cold_values,poster_4_values,poster_5_values,poster_6_values,poster_7_values,poster_8_values]
+    values_lst = [[[] for _ in range(3)] for _ in range(7)]
+
     for i in pic_list:
         org = cv.imread(dir + i)
-        warm = Filters.Toasty(org)
-        cold = Filters.Frosty(org)
-        poster_4 = Posterization.kMeanPosterization(org, 4)
-        poster_5 = Posterization.kMeanPosterization(org, 5)
-        poster_6 = Posterization.kMeanPosterization(org, 6)
-        poster_7 = Posterization.kMeanPosterization(org, 7)
-        poster_8 = Posterization.kMeanPosterization(org, 8)
-        output_img_lst = [warm,cold,poster_4,poster_5,poster_6,poster_7,poster_8]
-        for j in range(len(values_lst)):
-            values_lst[j][0].append(calculate_entropy(output_img_lst[j]))
-            values_lst[j][1].append(calculate_ssim(output_img_lst[j],org))
-            values_lst[j][2].append(calculate_psnr(output_img_lst[j],org))
-    for i in range(len(values_lst)):
-        for j in range(len(values_lst[i])):
-            values_lst[i][j] = np.mean(values_lst[i][j])
+        output_img_lst = [
+            Toasty(org),
+            Frosty(org),
+            kMeanPosterization(org, 4),
+            kMeanPosterization(org, 5),
+            kMeanPosterization(org, 6),
+            kMeanPosterization(org, 7),
+            kMeanPosterization(org, 8)
+        ]
+
+        for j, output_img in enumerate(output_img_lst):
+            values_lst[j][0].append(calculate_entropy(output_img))
+            values_lst[j][1].append(calculate_ssim(output_img, org))
+            values_lst[j][2].append(calculate_psnr(output_img, org))
+
+    values_lst = [[np.mean(values) for values in sublst] for sublst in values_lst]
 
     print(values_lst)
        
