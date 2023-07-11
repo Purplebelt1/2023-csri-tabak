@@ -1,6 +1,7 @@
 import cv2 as cv
 import numpy as np
 import Result
+from Filters import LookupTable
 
 def monochromatic(img, hue):
     #changes all hues in img to to hue and returns new image
@@ -343,6 +344,22 @@ def set_value(img, val):
     new_val = (np.ones(v.shape) * val).astype('uint8')
     #merges new value channel with other channels and converts back to bgr
     ret_im = cv.merge((h,s,new_val))
+    ret_im = cv.cvtColor(ret_im, cv.COLOR_HSV2BGR)
+    return ret_im
+
+def saturation_spline(img, x, y):
+    #changes saturation in img according to spline made from x and y
+    #copies img and converts it to hsv
+    im = img.copy()
+    hsv = cv.cvtColor(im, cv.COLOR_BGR2HSV)
+    #splits image into hue, saturation, and value channels
+    h,s,v = cv.split(hsv)
+    #makes lookup table from x and y
+    lookupTable = LookupTable(x, y)
+    #makes new saturation channel
+    new_sat = cv.LUT(s, lookupTable).astype('uint8)
+    #merges new saturation channel with other channels and converts back to bgr
+    ret_im = cv.merge((h,new_sat,v))
     ret_im = cv.cvtColor(ret_im, cv.COLOR_HSV2BGR)
     return ret_im
 
